@@ -7,5 +7,6 @@
 #include "tester.hpp"
 
 int main (int argc, char **argv){
-	test2(ManUkon<Member, std::vector<Member>::iterator, Counter>, 16, 20);
+	std::srand(std::time(nullptr));
+	test2(ManUkon<Member, std::vector<Member>::iterator, Counter>, 10000, 10000, 100);
 }

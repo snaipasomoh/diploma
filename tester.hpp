@@ -52,7 +52,7 @@ struct Result{
 std::vector<Member> genArray (size_t size, size_t arrId, size_t range= -1){
 	std::vector<Member> res;
 	for (size_t i = 0; i < size; i++){
-		Member newMember = {std::rand() % range, arrId, 0};
+		Member newMember = {(int)(std::rand() % range), arrId, 0};
 		res.push_back(newMember);
 	}
 	std::sort(res.begin(), res.end());
@@ -63,7 +63,6 @@ std::vector<Member> genArray (size_t size, size_t arrId, size_t range= -1){
 }
 
 Result check (std::vector<Member> const &arr, size_t maxId){
-	bool ordered = 1;
 	std::vector<bool> arrStab(maxId + 1, 1);
 	std::vector<size_t> prevInArr(maxId + 1, 0);
 	if (arr.empty()){
@@ -103,9 +102,9 @@ Result check (std::vector<Member> const &arr, size_t maxId){
 }
 
 template<class Merger>
-void test2 (Merger mrg, size_t size1, size_t size2){
-	std::vector<Member> arr = genArray(size1, 0, 100);
-	std::vector<Member> tArr = genArray(size2, 1, 100);
+void test2 (Merger mrg, size_t size1, size_t size2, size_t range = -1){
+	std::vector<Member> arr = genArray(size1, 0, range);
+	std::vector<Member> tArr = genArray(size2, 1, range);
 	arr.insert(arr.end(), tArr.begin(), tArr.end());
 	Counter cnt;
 	mrg(arr.begin(), arr.begin() + size1, arr.end(), cnt);
