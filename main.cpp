@@ -24,6 +24,12 @@ int main (int argc, char **argv){
 	// 	std::cout.flush();
 	// }
 	// std::cout << "100.0%" << std::endl << res;
-	test2(ManUkon<Member, std::vector<Member>::iterator, Counter>, 10000, 100000);
+	for (size_t i = 3; i < 8; i++){
+		for (size_t j = 3; j < 8; j++){
+			test2(ManUkon<Member, std::vector<Member>::iterator, Counter>, std::pow(10, i), std::pow(10, j));
+			std::cout << std::endl;
+		}
+	}
+	//test2(ManUkon<Member, std::vector<Member>::iterator, Counter>, 10000, 100000);
 	// test2(HwangLinWrapper<Member, std::vector<Member>::iterator, Counter>, 1000000, 100000);
 }
