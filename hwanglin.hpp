@@ -24,7 +24,8 @@ void HwangLin (tIter b1, tIter e1, tIter b2, tIter e2, tIter out, Cmp &cmp){
 		}
 		bound = std::min(bound, (int)(e2 - b2));
 
-		auto b2_iter = std::upper_bound(b2, b2 + bound, *b1, [&](T const &a, T const &b){return cmp(a, b) < 0;});
+		auto b2_iter = std::upper_bound(b2, b2 + bound, *b1,
+		                    [&](T const &a, T const &b){return cmp(a, b) < 0;});
 		while (b2 < b2_iter){
 			*out++ = *b2++;
 		}
