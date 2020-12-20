@@ -119,8 +119,18 @@ void test2 (Merger mrg, size_t size1, size_t size2, size_t range = -1){
 	std::vector<Member> arr = genArray(size1, 0, range);
 	std::vector<Member> tArr = genArray(size2, 1, range);
 	arr.insert(arr.end(), tArr.begin(), tArr.end());
+	// for (auto i : arr){
+	// 	std::cout << i.value << " ";
+	// }
+	// std::cout << std::endl;
 	Counter cnt;
+	auto t0 = std::clock();
 	mrg(arr.begin(), arr.begin() + size1, arr.end(), cnt);
+	auto t1 = std::clock();
+	// for (auto i : arr){
+	// 	std::cout << i.value << " ";
+	// }
+	// std::cout << std::endl;
 	Result res = check(arr, 1);
 	std::cout << "###   Test   ###" << std::endl;
 	std::cout << "Array1 size: " << size1 << std::endl;
@@ -130,6 +140,7 @@ void test2 (Merger mrg, size_t size1, size_t size2, size_t range = -1){
 	std::cout << "Size ratio: " << (double)size1 / (double)size2 << std::endl;
 	std::cout << res;
 	std::cout << "Comparisons: " << cnt.getComps() << std::endl;
+	std::cout << "Merge time: " << double(t1 - t0) / CLOCKS_PER_SEC << std::endl;
 }
 
 template<class Merger>

@@ -5,6 +5,7 @@
 #include <iterator>
 #include <cmath>
 #include <iostream>
+#include "hwanglin.hpp"
 
 template<class T, class tIter, class Cmp>
 tIter binarySearch (tIter l, tIter r, T x, Cmp &cmp){
@@ -247,8 +248,9 @@ void ManUkon (tIter first, tIter mid, tIter last, Cmp &cmp){
 		m = midSec;
 		moveBblock<T>(midSec, lastSec, last, k2, midSec - 1, lastAstart, cmp);
 		e = midSec;
-		std::inplace_merge(s, m, e,
-		                   [&](T const &a, T const &b){return cmp(a, b) < 0;});
+		// std::inplace_merge(s, m, e,
+		//                    [&](T const &a, T const &b){return cmp(a, b) < 0;});
+		HwangLinWrapper<T>(s, m, e, cmp);
 	}
 }
 
