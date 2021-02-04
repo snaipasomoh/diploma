@@ -24,12 +24,29 @@ int main (int argc, char **argv){
 	// 	std::cout.flush();
 	// }
 	// std::cout << "100.0%" << std::endl << res;
-	for (size_t i = 3; i < 8; i++){
-		for (size_t j = 3; j < 8; j++){
-			test2(ManUkon<Member, std::vector<Member>::iterator, Counter>, std::pow(10, i), std::pow(10, j));
-			std::cout << std::endl;
-		}
-	}
-	//test2(ManUkon<Member, std::vector<Member>::iterator, Counter>, 10000, 100000);
+
+
+	// for (size_t i = 3; i < 7; i++){
+	// 	for (size_t j = 3; j < 7; j++){
+	// 		std::cout << "n: " << i << std::endl;
+	// 		std::cout << "m: " << j << std::endl;
+	// 		double time = 0;
+	// 		double cmps = 0;
+	// 		for(size_t k = 0; k < 10; k++){
+	// 			Result res = silentTest2(ManUkon<Member, std::vector<Member>::iterator, Counter>, std::pow(10, i), std::pow(10, j));
+	// 			std::cout << std::endl << std::endl;
+	// 			time += res.time / 10;
+	// 			cmps += (double)res.cmps / 10;
+	// 		}
+	// 		std::cout << "\n\n AVERAGE:" << std::endl;
+	// 		std::cout << "Time: " << time << std::endl;
+	// 		std::cout << "Compares:" << cmps << std::endl;
+	// 		std::cout << "\n\n\n###########\n\n" << std::endl;
+	// 	}
+	// }
+
+
+	test2(ManUkon<Member, std::vector<Member>::iterator, Counter>, 1000, 9000);
+	test2(ManUkon<Member, std::vector<Member>::iterator, Counter>, 4500, 5500);
 	// test2(HwangLinWrapper<Member, std::vector<Member>::iterator, Counter>, 1000000, 100000);
 }
