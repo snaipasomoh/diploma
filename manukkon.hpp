@@ -250,7 +250,7 @@ void ManUkon (tIter first, tIter mid, tIter last, Cmp &cmp){
 		e = midSec;
 		// std::inplace_merge(s, m, e,
 		//                    [&](T const &a, T const &b){return cmp(a, b) < 0;});
-		HwangLinWrapper<T>(s, m, e, cmp);
+		HwangLinWrapper2<T>(s, m, e, cmp);
 	}
 }
 

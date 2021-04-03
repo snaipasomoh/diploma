@@ -45,6 +45,8 @@ class Counter{
 // 3 - ordered, stable
 struct Result{
 	char res;
+	size_t cmps;
+	double time;
 };
 
 bool operator< (Result const &a, Result const &b){
@@ -100,13 +102,14 @@ Result check (std::vector<Member> const &arr, size_t maxId){
 		prevInArr[arr[i].arrId] = arr[i].id;
 	}
 
-	Result res = {1};
+	Result res;
+	res.res = 1;
 	if (std::find(arrStab.begin(), arrStab.end(), 1) != arrStab.end()){
 		if (std::find(arrStab.begin(), arrStab.end(), 0) != arrStab.end()){
-			res = {2};
+			res.res = 2;
 		}
 		else{
-			res = {3};
+			res.res = 3;
 		}
 	}
 
@@ -132,6 +135,8 @@ void test2 (Merger mrg, size_t size1, size_t size2, size_t range = -1){
 	// }
 	// std::cout << std::endl;
 	Result res = check(arr, 1);
+	res.cmps = cnt.getComps();
+	res.time = double(t1 - t0) / CLOCKS_PER_SEC;
 	std::cout << "###   Test   ###" << std::endl;
 	std::cout << "Array1 size: " << size1 << std::endl;
 	std::cout << "Array2 size: " << size2 << std::endl;
@@ -152,8 +157,12 @@ Result silentTest2 (Merger mrg, size_t size1, size_t size2, size_t range = -1){
 	std::vector<Member> tArr = genArray(size2, 1, range);
 	arr.insert(arr.end(), tArr.begin(), tArr.end());
 	Counter cnt;
+	auto t0 = std::clock();
 	mrg(arr.begin(), arr.begin() + size1, arr.end(), cnt);
+	auto t1 = std::clock();
 	Result res = check(arr, 1);
+	res.cmps = cnt.getComps();
+	res.time = double(t1 - t0) / CLOCKS_PER_SEC;
 	return res;
 }
 
