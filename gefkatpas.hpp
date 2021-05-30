@@ -6,7 +6,11 @@
 #include <cmath>
 #include <iostream>
 
-// advance-by-range
+// Функция для перемещения окна по активному буферу в специальном режиме
+// l - итератор начала активного буфера
+// r - итератор конца активного буфера
+// pointer - итератор окна
+// n - количество совершаемых движений
 template<class tIter>
 void abr (tIter l, tIter r, tIter &pointer, size_t n){
 	size_t dist = n % std::distance(l, r);
@@ -18,6 +22,12 @@ void abr (tIter l, tIter r, tIter &pointer, size_t n){
 	}
 }
 
+// Функция для поиска префикса в Y'
+// l - итератор y_c
+// r - итератор конца Y'
+// x - итератор x_c
+// s - размер блоков для поиска
+// cmp - функтор сравнения
 template<class T, class tIter, class Cmp>
 tIter findPrefixBorder (tIter l, tIter r, tIter x, size_t s, Cmp &cmp){
 	auto defaultCMP = [&](T const &a, T const &b){return cmp(a, b) < 0;};
@@ -33,6 +43,16 @@ tIter findPrefixBorder (tIter l, tIter r, tIter x, size_t s, Cmp &cmp){
 	return std::lower_bound(currL, r, *x, defaultCMP);
 }
 
+// Функция для поиска следующего активного X-блока
+// OcB - итератор начала выходного блока
+// OcE - итератор конца выходного блока
+// YcB - итератор начала активного Y-блока
+// EcB - итератор начала активного буфера
+// EcE - итератор конца активного буфера
+// ec - итератор окна
+// f - итератор вспомогательного буфера
+// s - размер X-блоков
+// cmp - функтор сравнения
 template<class tIter, class Cmp>
 tIter findNextXBlk (tIter OcB, tIter OcE, tIter YcB, tIter EcB,
     tIter EcE, tIter ec, tIter f, size_t s, Cmp &cmp){
@@ -77,6 +97,16 @@ tIter findNextXBlk (tIter OcB, tIter OcE, tIter YcB, tIter EcB,
 	return res;
 }
 
+// Функция для поиска следующего активного X-блока
+// OcB - итератор начала выходного блока
+// OcE - итератор конца выходного блока
+// YcB - итератор начала активного Y-блока
+// EcB - итератор начала активного буфера
+// EcE - итератор конца активного буфера
+// ec - итератор окна
+// f - итератор вспомогательного буфера
+// s - размер X-блоков
+// cmp - функтор сравнения
 template<class T, class tIter, class Cmp>
 tIter findNextXBlkM (tIter OcB, tIter OcE, tIter YcB, tIter EcB,
     tIter EcE, tIter ec, tIter f, size_t s, Cmp &cmp){
@@ -114,6 +144,7 @@ tIter findNextXBlkM (tIter OcB, tIter OcE, tIter YcB, tIter EcB,
 	return res;
 }
 
+
 template<class tIter>
 void updateYblk (tIter &YcB, tIter &YcE, tIter yc, tIter &f, size_t S){
 	if (yc == YcE){
@@ -131,6 +162,11 @@ void updateOblk (tIter &OcB, tIter &OcE, tIter oc, size_t S){
 	}
 }
 
+// Алгоритм слияния Гефферта-Катаянена-Пасанена
+// l - итератор начала первого массива
+// m - итератор начала второго массива
+// r - итератор конца второго массива
+// cmp - функтор сравнения
 template<class T, class tIter, class Cmp>
 void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 	size_t M = std::distance(l, m);
@@ -159,7 +195,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 	tIter prefBord = l;
 
 	state_1:
-	std::cout << "state_1" << std::endl;
 
 	if (yc != r){
 		xk = std::upper_bound(xc, XcE, *yc, defaultCMP);
@@ -210,7 +245,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 
 
 	state_2:
-	std::cout << "state_2" << std::endl;
 	if (ec == EcE){
 		goto state_4;
 	}
@@ -246,7 +280,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 
 
 	state_3:
-	std::cout << "state_3" << std::endl;
 	if (ec == EcE){	// section 4
 		goto state_4;
 	}
@@ -294,10 +327,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 
 
 	state_4:
-	std::cout << "state_4" << std::endl;
-	if (f == l){
-		std::cout << "no free blk, but it's needed" << std::endl;
-	}
 	ec = f;
 	EcB = f;
 	EcE = EcB + S;
@@ -310,7 +339,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 
 
 	state_7:
-	std::cout << "state_7" << std::endl;
 	if (ec == EcE){
 		goto state_4;
 	}
@@ -356,7 +384,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 
 
 	state_7_spec:
-	std::cout << "state_7_spec" << std::endl;
 	if (ec == EcE){
 		goto state_4;
 	}
@@ -402,7 +429,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 
 
 	state_8:
-	std::cout << "state_8" << std::endl;
 	std::swap(f, ec);
 	EcB = ec;
 	EcE = EcB + S;
@@ -410,7 +436,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 
 
 	state_9:
-	std::cout << "state_9" << std::endl;
 	if (oc == xc){
 		goto state_1;
 	}
@@ -422,12 +447,9 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 
 
 	state_11:
-	std::cout << "state_11" << std::endl;
-	for (tIter i = l; i != r; i++){
-		std::cout << *i << " ";
-	}
-	std::cout << std::endl;
 
+	std::sort_heap(oc, yc, defaultCMP);
+	std::inplace_merge(oc, yc, r, defaultCMP);
 
 }
 
