@@ -164,6 +164,7 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 	size_t M = std::distance(l, m);
 	size_t N = std::distance(m, r);
 	size_t S = std::ceil(1 * std::pow((M * M / std::log2(M)), 1.0 / 3));
+	// size_t S = std::ceil(std::sqrt(M));
 	size_t Sx = M % S;
 	size_t Sy = S % S;
 	tIter f = m - 2 * S;
@@ -185,7 +186,7 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 	int mode = 0;
 
 	auto defaultCMP = [&](T const &a, T const &b){return cmp(a, b) < 0;};
-	size_t blkSize = std::pow(2, std::floor(std::log2((double)N / M)));
+	size_t blkSize = std::pow(2, std::max(std::floor(std::log2((double)N / M)), 0.0));
 	tIter prefBord = l;
 
 	while (std::distance(oc, yc) > 2 * S){
