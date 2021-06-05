@@ -80,8 +80,54 @@ std::vector<Member> genArray (size_t size, size_t arrId, size_t range= -1){
 	}
 	std::sort(res.begin(), res.end());
 	for (size_t i = 0; i < size; i++){
-		res[i].id = 0;
+		res[i].id = i;
 	}
+	return res;
+}
+
+std::vector<Member> genMaxMixedSeq (size_t size1, size_t size2, size_t range = -1){
+	std::vector<Member> res;
+	for (size_t i = 0; i < size1 + size2; i++){
+		Member newMember = {(int)(std::rand() % range), 0, 0};
+		res.push_back(newMember);
+	}
+	std::sort(res.begin(), res.end());
+
+	std::vector<Member> arr1;
+	std::vector<Member> arr2;
+	if (size1 <= size2){
+		size_t stepSize = (size1 + size2) / size1;
+		for (size_t i = 0; i < size1 + size2; i++){
+			if (i % stepSize == 0){
+				arr1.push_back(res[i]);
+			}
+			else{
+				arr2.push_back(res[i]);
+			}
+		}
+	}
+	else{
+		size_t stepSize = (size1 + size2) / size2;
+		for (size_t i = 0; i < size1 + size2; i++){
+			if (i % stepSize == 0){
+				arr2.push_back(res[i]);
+			}
+			else{
+				arr1.push_back(res[i]);
+			}
+		}
+	}
+	for (size_t i = 0; i < arr1.size(); i++){
+		arr1[i].id = i;
+		arr1[i].arrId = 0;
+	}
+	for (size_t i = 0; i < arr2.size(); i++){
+		arr2[i].id = i;
+		arr2[i].arrId = 1;
+	}
+	res.clear();
+	res.insert(res.end(), arr1.begin(), arr1.end());
+	res.insert(res.end(), arr2.begin(), arr2.end());
 	return res;
 }
 
@@ -164,6 +210,285 @@ Result silentTest2 (Merger mrg, size_t size1, size_t size2, size_t range = -1){
 	res.cmps = cnt.getComps();
 	res.time = double(t1 - t0) / CLOCKS_PER_SEC;
 	return res;
+}
+
+double origTest (std::vector<Member> const &seq, std::vector<Member> const &orig){
+	size_t N = seq.size();
+	size_t good = 0;
+	for (size_t i = 0; i < N; i++){
+		if (seq[i].arrId == orig[i].arrId && seq[i].id == orig[i].id){
+			good++;
+		}
+	}
+	return (double)good / N;
+}
+
+template<class Merger>
+void complexTest2 (Merger mrg, size_t size1, size_t size2, size_t tests, size_t range = -1){
+	std::vector<double> Times;
+	std::vector<size_t> Comps;
+	std::vector<Member> minTimeSeq;
+	std::vector<Member> maxTimeSeq;
+	std::vector<Member> minCompSeq;
+	std::vector<Member> maxCompSeq;
+	double minTime;
+	double maxTime;
+	double minComp;
+	double maxComp;
+	double minTimeOrig;
+	double maxTimeOrig;
+	double minCompOrig;
+	double maxCompOrig;
+	clock_t t0;
+	clock_t t1;
+	Counter cnt;
+	std::vector<Member> currSeq;
+	std::vector<Member> currSeqOrig;
+	double currTime;
+	size_t currComp;
+	double currOrig;
+
+	//extra-case 1
+	for (size_t i = 0; i < size1 + size2; i++){
+		Member newMember = {(int)(std::rand() % range), 0, 0};
+		currSeq.push_back(newMember);
+	}
+	std::sort(currSeq.begin(), currSeq.end());
+	for (size_t i = 0; i < size1; i++){
+		currSeq[i].id = i;
+	}
+	for (size_t i = 0; i < size2; i++){
+		currSeq[size1 + i].id = i;
+		currSeq[size1 + i].arrId = 1;
+	}
+	currSeqOrig = currSeq;
+	t0 = std::clock();
+	mrg(currSeq.begin(), currSeq.begin() + size1, currSeq.end(), cnt);
+	t1 = std::clock();
+	if (check(currSeq, 1).res == 0){
+		std::cerr << "EXTRA_CASE_1 UNORDERED" << std::endl;
+		goto extra2;
+	}
+	currTime = double(t1 - t0) / CLOCKS_PER_SEC;
+	currComp = cnt.getComps();
+	currOrig = origTest(currSeq, currSeqOrig);
+	Times.push_back(currTime);
+	Comps.push_back(currComp);
+	minTime = currTime;
+	maxTime = currTime;
+	minComp = currComp;
+	maxComp = currComp;
+	minTimeOrig = currOrig;
+	maxTimeOrig = currOrig;
+	minCompOrig = currOrig;
+	maxCompOrig = currOrig;
+	minTimeSeq = currSeq;
+	maxTimeSeq = currSeq;
+	minCompSeq = currSeq;
+	maxCompSeq = currSeq;
+
+
+	//extra-case 2
+	extra2:
+	currSeq.clear();
+	cnt.reset();
+	for (size_t i = 0; i < size1 + size2; i++){
+		Member newMember = {(int)(std::rand() % range), 1, 0};
+		currSeq.push_back(newMember);
+	}
+	std::sort(currSeq.begin(), currSeq.end());
+	for (size_t i = 0; i < size2; i++){
+		currSeq[i].id = i;
+	}
+	for (size_t i = 0; i < size1; i++){
+		currSeq[size2 + i].id = i;
+		currSeq[size2 + i].arrId = 0;
+	}
+	std::reverse(currSeq.begin(), currSeq.begin() + size2);
+	std::reverse(currSeq.begin() + size2, currSeq.end());
+	std::reverse(currSeq.begin(), currSeq.end());
+	currSeqOrig = currSeq;
+	t0 = std::clock();
+	mrg(currSeq.begin(), currSeq.begin() + size1, currSeq.end(), cnt);
+	t1 = std::clock();
+	if (check(currSeq, 1).res == 0){
+		std::cerr << "EXTRA_CASE_2 UNORDERED" << std::endl;
+		goto extra3;
+	}
+	currTime = double(t1 - t0) / CLOCKS_PER_SEC;
+	currComp = cnt.getComps();
+	currOrig = origTest(currSeq, currSeqOrig);
+	Times.push_back(currTime);
+	Comps.push_back(currComp);
+	if (currTime < minTime){
+		minTime = currTime;
+		minTimeOrig = currOrig;
+		minTimeSeq = currSeq;
+	}
+	if (currTime > maxTime){
+		maxTime = currTime;
+		maxTimeOrig = currOrig;
+		maxTimeSeq = currSeq;
+	}
+	if (currComp < minComp){
+		minComp = currComp;
+		minCompOrig = currOrig;
+		minCompSeq = currSeq;
+	}
+	if (currComp > maxComp){
+		maxComp = currComp;
+		maxCompOrig = currOrig;
+		maxCompSeq = currSeq;
+	}
+
+	
+	//extra-case 3
+	extra3:
+	currSeq.clear();
+	cnt.reset();
+	currSeq = genMaxMixedSeq(size1, size2, range);
+	currSeqOrig = currSeq;
+	t0 = std::clock();
+	mrg(currSeq.begin(), currSeq.begin() + size1, currSeq.end(), cnt);
+	t1 = std::clock();
+	if (check(currSeq, 1).res == 0){
+		std::cerr << "EXTRA_CASE_3 UNORDERED" << std::endl;
+		goto def;
+	}
+	currTime = double(t1 - t0) / CLOCKS_PER_SEC;
+	currComp = cnt.getComps();
+	currOrig = origTest(currSeq, currSeqOrig);
+	Times.push_back(currTime);
+	Comps.push_back(currComp);
+	if (currTime < minTime){
+		minTime = currTime;
+		minTimeOrig = currOrig;
+		minTimeSeq = currSeq;
+	}
+	if (currTime > maxTime){
+		maxTime = currTime;
+		maxTimeOrig = currOrig;
+		maxTimeSeq = currSeq;
+	}
+	if (currComp < minComp){
+		minComp = currComp;
+		minCompOrig = currOrig;
+		minCompSeq = currSeq;
+	}
+	if (currComp > maxComp){
+		maxComp = currComp;
+		maxCompOrig = currOrig;
+		maxCompSeq = currSeq;
+	}
+
+	std::cerr << "Extra-cases done" << std::endl;
+
+	//default cases
+	def:
+	for (size_t i = 0; i < tests; i++){
+		currSeq.clear();
+		cnt.reset();
+		currSeq = genArray(size1, 0, range);
+		currSeqOrig = genArray(size2, 1, range);
+		currSeq.insert(currSeq.end(), currSeqOrig.begin(), currSeqOrig.end());
+		currSeqOrig = currSeq;
+
+		t0 = std::clock();
+		mrg(currSeq.begin(), currSeq.begin() + size1, currSeq.end(), cnt);
+		t1 = std::clock();
+		if (check(currSeq, 1).res == 0){
+			std::cerr << "DEFAULT CASE UNORDERED" << std::endl;
+			continue;
+		}
+		currTime = double(t1 - t0) / CLOCKS_PER_SEC;
+		currComp = cnt.getComps();
+		currOrig = origTest(currSeq, currSeqOrig);
+		Times.push_back(currTime);
+		Comps.push_back(currComp);
+		if (currTime < minTime){
+			minTime = currTime;
+			minTimeOrig = currOrig;
+			minTimeSeq = currSeq;
+		}
+		if (currTime > maxTime){
+			maxTime = currTime;
+			maxTimeOrig = currOrig;
+			maxTimeSeq = currSeq;
+		}
+		if (currComp < minComp){
+			minComp = currComp;
+			minCompOrig = currOrig;
+			minCompSeq = currSeq;
+		}
+		if (currComp > maxComp){
+			maxComp = currComp;
+			maxCompOrig = currOrig;
+			maxCompSeq = currSeq;
+		}
+		std::cerr << ((double)i / tests) * 100 << "% of default cases done" << std::endl;
+		// std::cerr.flush();
+	}
+	std::cerr.clear();
+	std::cerr << "100% of default cases done" << std::endl;
+	
+
+	//result
+	std::cout << "### TEST RESULT ###" << std::endl;
+	std::cout << "Array1 size: " << size1 << std::endl;
+	std::cout << "Array2 size: " << size2 << std::endl;
+	// Danger! Overflow is possible in next line!
+	std::cout << "Total size: " << size1 + size2 << std::endl;
+	std::cout << "Size ratio: " << (double)size1 / (double)size2 << std::endl;
+	std::cout << std::endl;
+	std::cout << Times.size() << " of " << tests + 3 << " OK" << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "Min time: " << minTime << " sec on sequence:" << std::endl;
+	for (Member &i : minTimeSeq){
+		std::cout << i.arrId << " ";
+	}
+	std::cout << std::endl;
+	std::cout << "with saving " << minTimeOrig * 100 << "% element's places" << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "Max time: " << maxTime << " sec on sequence:" << std::endl;
+	for (Member &i : maxTimeSeq){
+		std::cout << i.arrId << " ";
+	}
+	std::cout << std::endl;
+	std::cout << "with saving " << maxTimeOrig * 100 << "% element's places" << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "Min compares: " << minComp << " on sequence:" << std::endl;
+	for (Member &i : minCompSeq){
+		std::cout << i.arrId << " ";
+	}
+	std::cout << std::endl;
+	std::cout << "with saving " << minCompOrig * 100 << "% element's places" << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "Max compares: " << maxComp << " on sequence:" << std::endl;
+	for (Member &i : maxCompSeq){
+		std::cout << i.arrId << " ";
+	}
+	std::cout << std::endl;
+	std::cout << "with saving " << maxCompOrig * 100 << "% element's places" << std::endl;
+	std::cout << std::endl;
+
+	std::sort(Times.begin(), Times.end());
+	std::sort(Comps.begin(), Comps.end());
+	size_t N = Times.size();
+	double avTime = 0;
+	double avComp = 0;
+	for (size_t i = 0; i < N; i++){
+		avTime += Times[i] / N;
+		avComp += (double)Comps[i] / N;
+	}
+	
+	std::cout << "Average time: " << avTime << std::endl;
+	std::cout << "Median time: " << Times[N / 2 + 1] << std::endl;
+	std::cout << "Average compares: " << avComp << std::endl;
+	std::cout << "Median compares: " << Comps[N / 2 + 1] << std::endl;
 }
 
 #endif
