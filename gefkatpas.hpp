@@ -5,12 +5,108 @@
 #include <iterator>
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 
-// Функция для перемещения окна по активному буферу в специальном режиме
-// l - итератор начала активного буфера
-// r - итератор конца активного буфера
-// pointer - итератор окна
-// n - количество совершаемых движений
+#define writeln(a) std::cout << a << std::endl
+#define checkF if (f == r){ writeln("no f when needed");}
+#define debug for (tIter i = l; i != r; i++){\
+				std::cout << std::setfill(' ') << std::setw(2) << *i << " ";\
+			}\
+			std::cout << std::endl;\
+			for (tIter i = l; i != r; i++){\
+				if (i == oc){\
+					std::cout << "oc ";\
+				}\
+				else{\
+					std::cout << "   ";\
+				}\
+			}\
+			std::cout << std::endl;\
+			for (tIter i = l; i != r; i++){\
+				if (i == xc){\
+					std::cout << "xc ";\
+				}\
+				else{\
+					std::cout << "   ";\
+				}\
+			}\
+			std::cout << std::endl;\
+			for (tIter i = l; i != r; i++){\
+				if (i == ec){\
+					std::cout << "ec ";\
+				}\
+				else{\
+					std::cout << "   ";\
+				}\
+			}\
+			std::cout << std::endl;\
+			for (tIter i = l; i != r; i++){\
+				if (i == yc){\
+					std::cout << "yc ";\
+				}\
+				else{\
+					std::cout << "   ";\
+				}\
+			}\
+			std::cout << std::endl;\
+			for (tIter i = l; i != r; i++){\
+				if (i == f){\
+					std::cout << " f ";\
+				}\
+				else{\
+					std::cout << "   ";\
+				}\
+			}\
+			std::cout << std::endl;\
+			for (tIter i = l; i != r; i++){\
+				if (i == prefBord){\
+					std::cout << "pb ";\
+				}\
+				else{\
+					std::cout << "   ";\
+				}\
+			}\
+			std::cout << std::endl;\
+			for (tIter i = l; i != r; i++){\
+				if (i == OcB){\
+					std::cout << "Oc ";\
+				}\
+				else{\
+					std::cout << "   ";\
+				}\
+			}\
+			std::cout << std::endl;\
+			for (tIter i = l; i != r; i++){\
+				if (i == EcB){\
+					std::cout << "Ec ";\
+				}\
+				else{\
+					std::cout << "   ";\
+				}\
+			}\
+			std::cout << std::endl;\
+			for (tIter i = l; i != r; i++){\
+				if (i == XcB){\
+					std::cout << "Xc ";\
+				}\
+				else{\
+					std::cout << "   ";\
+				}\
+			}\
+			std::cout << std::endl;\
+			for (tIter i = l; i != r; i++){\
+				if (i == YcB){\
+					std::cout << "Yc ";\
+				}\
+				else{\
+					std::cout << "   ";\
+				}\
+			}\
+			std::cout << std::endl;\
+
+
+
+// advance-by-range
 template<class tIter>
 void abr (tIter l, tIter r, tIter &pointer, size_t n){
 	size_t dist = n % std::distance(l, r);
@@ -22,14 +118,11 @@ void abr (tIter l, tIter r, tIter &pointer, size_t n){
 	}
 }
 
-// Функция для поиска префикса в Y'
-// l - итератор y_c
-// r - итератор конца Y'
-// x - итератор x_c
-// s - размер блоков для поиска
-// cmp - функтор сравнения
 template<class T, class tIter, class Cmp>
 tIter findPrefixBorder (tIter l, tIter r, tIter x, size_t s, Cmp &cmp){
+	if (l == r){
+		return r;
+	}
 	auto defaultCMP = [&](T const &a, T const &b){return cmp(a, b) < 0;};
 	tIter currL = l;
 	tIter currR = l + s;
@@ -43,16 +136,6 @@ tIter findPrefixBorder (tIter l, tIter r, tIter x, size_t s, Cmp &cmp){
 	return std::lower_bound(currL, r, *x, defaultCMP);
 }
 
-// Функция для поиска следующего активного X-блока
-// OcB - итератор начала выходного блока
-// OcE - итератор конца выходного блока
-// YcB - итератор начала активного Y-блока
-// EcB - итератор начала активного буфера
-// EcE - итератор конца активного буфера
-// ec - итератор окна
-// f - итератор вспомогательного буфера
-// s - размер X-блоков
-// cmp - функтор сравнения
 template<class tIter, class Cmp>
 tIter findNextXBlk (tIter OcB, tIter OcE, tIter YcB, tIter EcB,
     tIter EcE, tIter ec, tIter f, size_t s, Cmp &cmp){
@@ -93,21 +176,12 @@ tIter findNextXBlk (tIter OcB, tIter OcE, tIter YcB, tIter EcB,
 				r = currBlk + s - 1;
 			}
 		}
+		std::advance(currBlk, s);
 	}
 	return res;
 }
 
-// Функция для поиска следующего активного X-блока
-// OcB - итератор начала выходного блока
-// OcE - итератор конца выходного блока
-// YcB - итератор начала активного Y-блока
-// EcB - итератор начала активного буфера
-// EcE - итератор конца активного буфера
-// ec - итератор окна
-// f - итератор вспомогательного буфера
-// s - размер X-блоков
-// cmp - функтор сравнения
-template<class T, class tIter, class Cmp>
+template<class tIter, class Cmp>
 tIter findNextXBlkM (tIter OcB, tIter OcE, tIter YcB, tIter EcB,
     tIter EcE, tIter ec, tIter f, size_t s, Cmp &cmp){
 	tIter res;
@@ -140,33 +214,49 @@ tIter findNextXBlkM (tIter OcB, tIter OcE, tIter YcB, tIter EcB,
 				r = currBlk + s - 1;
 			}
 		}
+		std::advance(currBlk, s);
 	}
 	return res;
 }
 
+template<class T, class tIter, class Cmp>
+void bufferDistribution (tIter l, tIter m, tIter r, Cmp &cmp){
+	auto defaultCMP = [&](T const &a, T const &b){return cmp(a, b) < 0;};
+	size_t N = std::distance(m, r);
+	size_t M = std::distance(l, m);
+	size_t blockSize = std::ceil((double)N / M);
+	size_t bufSize = M;
 
-template<class tIter>
-void updateYblk (tIter &YcB, tIter &YcE, tIter yc, tIter &f, size_t S){
-	if (yc == YcE){
-		f = YcB;
-		YcB = YcE;
-		YcE = YcB + S;
+	tIter currL = m;
+	tIter currR = m + blockSize;
+	tIter bufStart = l;
+	tIter currBstart = m;
+	while (bufSize > 0){
+		if (currR > r){
+			currR = r;
+		}
+		if (currL < currBstart){
+			currL = currBstart;
+		}
+		if (cmp(*(currR - 1), *bufStart) >= 0){
+			tIter swapBorder = std::lower_bound(currL, currR, *bufStart,
+			    defaultCMP);
+			size_t swapSize = std::distance(currBstart, swapBorder);
+			std::reverse(bufStart, bufStart + bufSize);
+			std::reverse(currBstart, swapBorder);
+			std::reverse(bufStart, swapBorder);
+			std::advance(bufStart, swapSize + 1);
+			bufSize--;
+			currBstart = swapBorder;
+		}
+		else{
+			// std::advance(currL, blockSize);
+			currL = currR;
+			std::advance(currR, blockSize);
+		}
 	}
 }
 
-template<class tIter>
-void updateOblk (tIter &OcB, tIter &OcE, tIter oc, size_t S){
-	if (oc == OcE){
-		OcB = OcE;
-		OcE = OcB + S;
-	}
-}
-
-// Алгоритм слияния Гефферта-Катаянена-Пасанена
-// l - итератор начала первого массива
-// m - итератор начала второго массива
-// r - итератор конца второго массива
-// cmp - функтор сравнения
 template<class T, class tIter, class Cmp>
 void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 	size_t M = std::distance(l, m);
@@ -187,270 +277,265 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 	tIter oc = l;
 	tIter OcB = XcB;
 	tIter OcE = XcE;
-	T holeElem = *ec;
+	T holeElem;
 	tIter xk;
+	// bool specialMode = 1;
+	bool specialXUpdMode = 0;
+	// bool specialYUpdMode = 0;
+	// bool noFreeForOldX = 0;
+	int mode = 0;
 
 	auto defaultCMP = [&](T const &a, T const &b){return cmp(a, b) < 0;};
 	size_t blkSize = std::pow(2, std::floor(std::log2((double)N / M)));
 	tIter prefBord = l;
 
-	state_1:
+	while (std::distance(oc, yc) > 2 * S){
+		if (mode == 0){
+			// writeln("mod0");
+			// debug
 
-	if (yc != r){
-		xk = std::upper_bound(xc, XcE, *yc, defaultCMP);
-	}
-	else{
-		xk = XcE;
-	}
-	
-	
-	if (xk == XcE){
-		oc = xk;
-		updateOblk(OcB, OcE, oc, S);
-
-		if (std::distance(oc, yc) == 2 * S){
-			goto state_11;
-		}
-
-		XcB = findNextXBlk(OcB, OcE, YcB, EcB, EcE, ec, f, S, cmp);
-		XcE = XcB + S;
-		xc = XcB;
-		ec = EcB;
-		if (OcB == XcB){
-			goto state_1;
-		}
-		else if (oc == ec){
-			goto state_7;
-		}
-		else{
-			goto state_3;
-		}
-	}
-	else{
-		oc = xk;
-		ec = l + (std::distance(l, ec) / S) * S + std::distance(l, xk) % S;
-		holeElem = *oc;
-		*oc = *yc;
-		*yc = *ec;
-		*ec = holeElem;
-		xc = ec;
-		XcB = EcB;
-		XcE = EcE;
-		oc++;
-		yc++;
-		ec++;
-		updateYblk(YcB, YcE, yc, f, S);
-		goto state_2;
-	}
-
-
-	state_2:
-	if (ec == EcE){
-		goto state_4;
-	}
-
-	if (prefBord == l){
-		prefBord = findPrefixBorder<T>(yc, r, xc, blkSize, cmp);
-	}
-
-	if (yc != prefBord){
-		holeElem = *oc;
-		*oc = *yc;
-		*yc = *ec;
-		*ec = holeElem;
-		oc++;
-		ec++;
-		yc++;
-		updateYblk(YcB, YcE, yc, f, S);
-	}
-	else{
-		prefBord = l;
-		holeElem = *oc;
-		*oc = *xc;
-		*xc = *ec;
-		*ec = holeElem;
-		oc++;
-		ec++;
-		xc++;
-		if (std::distance(oc, yc) == 2 * S){
-			goto state_11;
-		}
-	}
-	goto state_2;
-
-
-	state_3:
-	if (ec == EcE){	// section 4
-		goto state_4;
-	}
-	if (xc == XcE){	// section 6
-		f = XcB;
-		xc = findNextXBlk(OcB, OcE, YcB, EcB, EcE, ec, f, S, cmp);
-		XcB = xc;
-		XcE = XcB + S;
-		if (xc == EcB){
-			goto state_2;
-		}
-		if (xc == OcB){
-			goto state_1;
-		}
-	}
-
-	if (prefBord == l){
-		prefBord = findPrefixBorder<T>(yc, r, xc, blkSize, cmp);
-	}
-
-	if (yc != prefBord){
-		holeElem = *oc;
-		*oc = *yc;
-		*yc = *ec;
-		*ec = holeElem;
-		oc++;
-		ec++;
-		yc++;
-		updateYblk(YcB, YcE, yc, f, S);
-	}
-	else{
-		prefBord = l;
-		holeElem = *oc;
-		*oc = *xc;
-		*xc = *ec;
-		*ec = holeElem;
-		oc++;
-		ec++;
-		xc++;
-		if (std::distance(oc, yc) == 2 * S){
-			goto state_11;
-		}
-	}
-	goto state_3;
-
-
-	state_4:
-	ec = f;
-	EcB = f;
-	EcE = EcB + S;
-	f = l;
-	updateOblk(OcB, OcE, oc, S);
-	if (OcB == XcB){
-		goto state_9;
-	}
-	goto state_3;
-
-
-	state_7:
-	if (ec == EcE){
-		goto state_4;
-	}
-	
-	if (prefBord == l){
-		prefBord = findPrefixBorder<T>(yc, r, xc, blkSize, cmp);
-	}
-
-	if (yc != prefBord){
-		holeElem = *oc;
-		*oc = *yc;
-		*yc = holeElem;
-		oc++;
-		ec++;
-		yc++;
-		updateYblk(YcB, YcE, yc, f, S);
-	}
-	else{
-		prefBord = l;
-		holeElem = *oc;
-		*oc = *xc;
-		*xc = holeElem;
-		oc++;
-		ec++;
-		xc++;
-		if (std::distance(oc, yc) == 2 * S){
-			goto state_11;
-		}
-		if (xc == XcE){	// section 6
-			f = XcB;
-			xc = findNextXBlk(OcB, OcE, YcB, EcB, EcE, ec, f, S, cmp);
-			XcB = xc;
-			XcE = XcB + S;
-			if (xc == EcB){
-				goto state_2;
+			prefBord = l;
+			specialXUpdMode = 0;
+			if (yc != r){
+				xk = std::upper_bound(xc, XcE, *yc, defaultCMP);
 			}
-			if (xc == OcB){
-				goto state_1;
+			else{
+				xk = XcE;
+			}
+			if (xk == XcE){
+				// writeln("mod0a");
+				mode = 1;
+				oc = xk;
+				OcB = XcE;
+				OcE = OcB + S;
+				ec = EcB;
+				// writeln("before find");
+				xc = findNextXBlk(OcB, OcE, YcB, EcB, EcE, ec, f, S, cmp);
+				// writeln("after find");
+				XcB = xc;
+				XcE = XcB + S;
+
+				if (OcB == EcB){
+					specialXUpdMode = 1;
+				}
+				if (OcB == f){
+					checkF;
+					std::swap(ec, f);
+					EcB = ec;
+					EcE = EcB + S;
+				}
+				if (OcB == XcB){
+					mode = 0;
+					continue;
+				}
+			}
+			else{
+				// writeln("mod0b");
+				mode = 1;
+				oc = xk;
+				// ec = l + (std::distance(l, ec) / S) * S + std::distance(l, xk) % S;
+				ec = EcE - std::distance(oc, OcE);
+				holeElem = *oc;
+				*oc = *yc;
+				*yc = *ec;
+				*ec = holeElem;
+
+				xc = ec;
+				XcB = EcB;
+				XcE = EcE;
+				yc++;
+				if (yc == YcE){
+					f = YcB;
+					YcB = YcE;
+					YcE = YcB + S < r ? YcB + S : r;
+				}
+				oc++;
+				if (oc == OcE){
+					OcB = OcE;
+					OcE = OcB + S;
+				}
+				ec++;
+				if (ec == EcE){
+					checkF;
+					ec = f;
+					EcB = ec;
+					EcE = EcB + S;
+					f = r;
+				}
+				if (OcB == EcB){
+					specialXUpdMode = 1;
+				}
 			}
 		}
-	}
-	goto state_7;
+		else if (mode == 1){
+			// writeln("mod1");
+			// std::cout << specialXUpdMode << std::endl;
+			// debug
 
-
-	state_7_spec:
-	if (ec == EcE){
-		goto state_4;
-	}
-	
-	if (prefBord == l){
-		prefBord = findPrefixBorder<T>(yc, r, xc, blkSize, cmp);
-	}
-
-	if (yc != prefBord){
-		holeElem = *oc;
-		*oc = *yc;
-		*yc = holeElem;
-		oc++;
-		ec++;
-		yc++;
-		updateYblk(YcB, YcE, yc, f, S);
-	}
-	else{
-		prefBord = l;
-		holeElem = *oc;
-		*oc = *xc;
-		*xc = holeElem;
-		oc++;
-		ec++;
-		xc++;
-		if (std::distance(oc, yc) == 2 * S){
-			goto state_11;
-		}
-		if (xc == XcE){	// section 6
-			f = XcB;
-			xc = findNextXBlkM<T>(OcB, OcE, YcB, EcB, EcE, ec, f, S, cmp);
-			XcB = xc;
-			XcE = XcB + S;
-			if (xc == EcB){
-				goto state_2;
+			if (prefBord == l){
+				prefBord = findPrefixBorder<T>(yc, r, xc, blkSize, cmp);
 			}
-			if (xc == OcB){
-				goto state_1;
+
+			if (yc < prefBord){
+				// writeln("1a");
+				holeElem = *oc;
+				*oc = *yc;
+				if (!specialXUpdMode){
+					*yc = *ec;
+					*ec = holeElem;
+				}
+				else{
+					*yc = holeElem;
+				}
+				yc++;
+				oc++;
+				ec++;
+			}
+			else{
+				// writeln("1b");
+				prefBord = l;
+				holeElem = *oc;
+				*oc = *xc;
+				if (!specialXUpdMode){
+					*xc = *ec;
+					*ec = holeElem;
+				}
+				else{
+					*xc = holeElem;
+				}
+				xc++;
+				oc++;
+				ec++;
+			}
+			
+			if (oc == OcE){
+				OcB = OcE;
+				OcE = OcB + S;
+			}
+			if (ec == EcE){
+				checkF;
+				ec = f;
+				EcB = ec;
+				EcE = EcB + S;
+				f = r;
+				specialXUpdMode = 0;
+			}
+			if (yc == YcE){
+				f = YcB;
+				YcB = yc;
+				YcE = YcB + S;
+			}
+			if (xc == XcE){
+				if (specialXUpdMode){
+					xc = findNextXBlkM(OcB, OcE, YcB, EcB, EcE, ec, f, S, cmp);
+				}
+				else{
+					xc = findNextXBlk(OcB, OcE, YcB, EcB, EcE, ec, f, S, cmp);
+				}
+				f = XcB;
+				XcB = xc;
+				XcE = XcB + S;
+			}
+			if (XcB == EcB){
+
+			}
+			if (OcB == EcB){
+				specialXUpdMode = 1;
+				// continue; // ????????????????????????????
+			}
+			if (OcB == f){
+				std::swap(f, ec);
+				EcB = ec;
+				EcE = EcB + S;
+				specialXUpdMode = 1;
+				// continue; // ????????????????????????????
+			}
+			if (OcB == XcB){
+				// writeln("STATE 9!!!!!!!!!!!!");
+				if (oc == xc){
+					mode = 0;
+					continue;
+				}
+				f = EcB;
+				mode = 2;
+				// continue; // ????????????????????????????
 			}
 		}
+		else if (mode == 2){
+			// writeln("mod2");
+			// debug
+
+			if (prefBord == l){
+				prefBord = findPrefixBorder<T>(yc, r, xc, blkSize, cmp);
+			}
+
+			if (yc < prefBord){
+				holeElem = *oc;
+				*oc = *yc;
+				*yc = holeElem;
+				yc++;
+				oc++;
+				ec++;
+			}
+			else{
+				prefBord = l;
+				holeElem = *oc;
+				*oc = *xc;
+				*xc = holeElem;
+				xc++;
+				oc++;
+				ec++;
+			}
+			// if (oc == OcE){
+			// 	OcB = OcE;
+			// 	OcE = OcB + S;
+			// }
+			// if (ec == EcE){
+			// 	checkF;
+			// 	ec = f;
+			// 	EcB = ec;
+			// 	EcE = EcB + S;
+			// 	f = r;
+			// 	specialXUpdMode = 0;
+			// }
+			if (yc == YcE){
+				ec = YcB;
+				YcB = yc;
+				YcE = YcB + S;
+				EcB = ec;
+				EcE = EcB + S;
+				ec = EcB + std::distance(OcB, oc);
+				mode = 0;
+				continue;
+			}
+			if (xc == XcE){
+				xc = findNextXBlkM(OcB, OcE, YcB, EcB, EcE, ec, f, S, cmp);
+				XcB = xc;
+				XcE = XcB + S;
+				specialXUpdMode = 1;
+				mode = 1;
+				continue;
+			}
+		}
+		// std::cout << std::endl << std::endl;
 	}
-	goto state_7_spec;
 
+	// debug
+	// std::cout << std::endl;
 
-	state_8:
-	std::swap(f, ec);
-	EcB = ec;
-	EcE = EcB + S;
-	goto state_7;
+	// for (tIter i = l; i != r; i++){
+	// 	std::cout << *i << " ";
+	// }
+	// std::cout << std::endl;
 
+	std::sort(oc, yc, defaultCMP);
+	// std::merge(oc, yc, r, defaultCMP);
+	bufferDistribution<T>(oc, yc, r, cmp);
 
-	state_9:
-	if (oc == xc){
-		goto state_1;
-	}
-	f = ec;
-	ec = oc;
-	EcB = OcB;
-	EcE = OcE;
-	goto state_7_spec;
-
-
-	state_11:
-
-	std::sort_heap(oc, yc, defaultCMP);
-	std::inplace_merge(oc, yc, r, defaultCMP);
-
+	// for (tIter i = l; i != r; i++){
+	// 	std::cout << *i << " ";
+	// }
+	// std::cout << std::endl;
 }
 
 #endif
