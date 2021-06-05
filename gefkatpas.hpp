@@ -7,104 +7,6 @@
 #include <iostream>
 #include <iomanip>
 
-#define writeln(a) std::cout << a << std::endl
-#define checkF if (f == r){ writeln("no f when needed");}
-#define debug for (tIter i = l; i != r; i++){\
-				std::cout << std::setfill(' ') << std::setw(2) << *i << " ";\
-			}\
-			std::cout << std::endl;\
-			for (tIter i = l; i != r; i++){\
-				if (i == oc){\
-					std::cout << "oc ";\
-				}\
-				else{\
-					std::cout << "   ";\
-				}\
-			}\
-			std::cout << std::endl;\
-			for (tIter i = l; i != r; i++){\
-				if (i == xc){\
-					std::cout << "xc ";\
-				}\
-				else{\
-					std::cout << "   ";\
-				}\
-			}\
-			std::cout << std::endl;\
-			for (tIter i = l; i != r; i++){\
-				if (i == ec){\
-					std::cout << "ec ";\
-				}\
-				else{\
-					std::cout << "   ";\
-				}\
-			}\
-			std::cout << std::endl;\
-			for (tIter i = l; i != r; i++){\
-				if (i == yc){\
-					std::cout << "yc ";\
-				}\
-				else{\
-					std::cout << "   ";\
-				}\
-			}\
-			std::cout << std::endl;\
-			for (tIter i = l; i != r; i++){\
-				if (i == f){\
-					std::cout << " f ";\
-				}\
-				else{\
-					std::cout << "   ";\
-				}\
-			}\
-			std::cout << std::endl;\
-			for (tIter i = l; i != r; i++){\
-				if (i == prefBord){\
-					std::cout << "pb ";\
-				}\
-				else{\
-					std::cout << "   ";\
-				}\
-			}\
-			std::cout << std::endl;\
-			for (tIter i = l; i != r; i++){\
-				if (i == OcB){\
-					std::cout << "Oc ";\
-				}\
-				else{\
-					std::cout << "   ";\
-				}\
-			}\
-			std::cout << std::endl;\
-			for (tIter i = l; i != r; i++){\
-				if (i == EcB){\
-					std::cout << "Ec ";\
-				}\
-				else{\
-					std::cout << "   ";\
-				}\
-			}\
-			std::cout << std::endl;\
-			for (tIter i = l; i != r; i++){\
-				if (i == XcB){\
-					std::cout << "Xc ";\
-				}\
-				else{\
-					std::cout << "   ";\
-				}\
-			}\
-			std::cout << std::endl;\
-			for (tIter i = l; i != r; i++){\
-				if (i == YcB){\
-					std::cout << "Yc ";\
-				}\
-				else{\
-					std::cout << "   ";\
-				}\
-			}\
-			std::cout << std::endl;\
-
-
 
 // advance-by-range
 template<class tIter>
@@ -279,10 +181,7 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 	tIter OcE = XcE;
 	T holeElem;
 	tIter xk;
-	// bool specialMode = 1;
 	bool specialXUpdMode = 0;
-	// bool specialYUpdMode = 0;
-	// bool noFreeForOldX = 0;
 	int mode = 0;
 
 	auto defaultCMP = [&](T const &a, T const &b){return cmp(a, b) < 0;};
@@ -291,8 +190,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 
 	while (std::distance(oc, yc) > 2 * S){
 		if (mode == 0){
-			// writeln("mod0");
-			// debug
 
 			prefBord = l;
 			specialXUpdMode = 0;
@@ -303,15 +200,12 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 				xk = XcE;
 			}
 			if (xk == XcE){
-				// writeln("mod0a");
 				mode = 1;
 				oc = xk;
 				OcB = XcE;
 				OcE = OcB + S;
 				ec = EcB;
-				// writeln("before find");
 				xc = findNextXBlk(OcB, OcE, YcB, EcB, EcE, ec, f, S, cmp);
-				// writeln("after find");
 				XcB = xc;
 				XcE = XcB + S;
 
@@ -319,7 +213,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 					specialXUpdMode = 1;
 				}
 				if (OcB == f){
-					checkF;
 					std::swap(ec, f);
 					EcB = ec;
 					EcE = EcB + S;
@@ -330,10 +223,8 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 				}
 			}
 			else{
-				// writeln("mod0b");
 				mode = 1;
 				oc = xk;
-				// ec = l + (std::distance(l, ec) / S) * S + std::distance(l, xk) % S;
 				ec = EcE - std::distance(oc, OcE);
 				holeElem = *oc;
 				*oc = *yc;
@@ -356,7 +247,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 				}
 				ec++;
 				if (ec == EcE){
-					checkF;
 					ec = f;
 					EcB = ec;
 					EcE = EcB + S;
@@ -368,16 +258,12 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 			}
 		}
 		else if (mode == 1){
-			// writeln("mod1");
-			// std::cout << specialXUpdMode << std::endl;
-			// debug
 
 			if (prefBord == l){
 				prefBord = findPrefixBorder<T>(yc, r, xc, blkSize, cmp);
 			}
 
 			if (yc < prefBord){
-				// writeln("1a");
 				holeElem = *oc;
 				*oc = *yc;
 				if (!specialXUpdMode){
@@ -392,7 +278,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 				ec++;
 			}
 			else{
-				// writeln("1b");
 				prefBord = l;
 				holeElem = *oc;
 				*oc = *xc;
@@ -413,7 +298,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 				OcE = OcB + S;
 			}
 			if (ec == EcE){
-				checkF;
 				ec = f;
 				EcB = ec;
 				EcE = EcB + S;
@@ -441,29 +325,23 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 			}
 			if (OcB == EcB){
 				specialXUpdMode = 1;
-				// continue; // ????????????????????????????
 			}
 			if (OcB == f){
 				std::swap(f, ec);
 				EcB = ec;
 				EcE = EcB + S;
 				specialXUpdMode = 1;
-				// continue; // ????????????????????????????
 			}
 			if (OcB == XcB){
-				// writeln("STATE 9!!!!!!!!!!!!");
 				if (oc == xc){
 					mode = 0;
 					continue;
 				}
 				f = EcB;
 				mode = 2;
-				// continue; // ????????????????????????????
 			}
 		}
 		else if (mode == 2){
-			// writeln("mod2");
-			// debug
 
 			if (prefBord == l){
 				prefBord = findPrefixBorder<T>(yc, r, xc, blkSize, cmp);
@@ -486,18 +364,6 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 				oc++;
 				ec++;
 			}
-			// if (oc == OcE){
-			// 	OcB = OcE;
-			// 	OcE = OcB + S;
-			// }
-			// if (ec == EcE){
-			// 	checkF;
-			// 	ec = f;
-			// 	EcB = ec;
-			// 	EcE = EcB + S;
-			// 	f = r;
-			// 	specialXUpdMode = 0;
-			// }
 			if (yc == YcE){
 				ec = YcB;
 				YcB = yc;
@@ -517,25 +383,11 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 				continue;
 			}
 		}
-		// std::cout << std::endl << std::endl;
 	}
 
-	// debug
-	// std::cout << std::endl;
-
-	// for (tIter i = l; i != r; i++){
-	// 	std::cout << *i << " ";
-	// }
-	// std::cout << std::endl;
 
 	std::sort(oc, yc, defaultCMP);
-	// std::merge(oc, yc, r, defaultCMP);
 	bufferDistribution<T>(oc, yc, r, cmp);
-
-	// for (tIter i = l; i != r; i++){
-	// 	std::cout << *i << " ";
-	// }
-	// std::cout << std::endl;
 }
 
 #endif
