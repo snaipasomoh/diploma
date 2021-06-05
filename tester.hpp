@@ -98,7 +98,7 @@ std::vector<Member> genMaxMixedSeq (size_t size1, size_t size2, size_t range = -
 	if (size1 <= size2){
 		size_t stepSize = (size1 + size2) / size1;
 		for (size_t i = 0; i < size1 + size2; i++){
-			if (i % stepSize == 0){
+			if (arr1.size() < size1 && i % stepSize == 0){
 				arr1.push_back(res[i]);
 			}
 			else{
@@ -109,7 +109,7 @@ std::vector<Member> genMaxMixedSeq (size_t size1, size_t size2, size_t range = -
 	else{
 		size_t stepSize = (size1 + size2) / size2;
 		for (size_t i = 0; i < size1 + size2; i++){
-			if (i % stepSize == 0){
+			if (arr2.size() < size2 && i % stepSize == 0){
 				arr2.push_back(res[i]);
 			}
 			else{

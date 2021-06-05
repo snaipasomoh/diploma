@@ -133,7 +133,7 @@ void bufferDistribution (tIter l, tIter m, tIter r, Cmp &cmp){
 	tIter currR = m + blockSize;
 	tIter bufStart = l;
 	tIter currBstart = m;
-	while (bufSize > 0){
+	while (bufSize > 0 && currL < r){
 		if (currR > r){
 			currR = r;
 		}
@@ -163,7 +163,7 @@ template<class T, class tIter, class Cmp>
 void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 	size_t M = std::distance(l, m);
 	size_t N = std::distance(m, r);
-	size_t S = std::ceil(std::pow((M * M / std::log2(M)), 1.0 / 3));
+	size_t S = std::ceil(1 * std::pow((M * M / std::log2(M)), 1.0 / 3));
 	size_t Sx = M % S;
 	size_t Sy = S % S;
 	tIter f = m - 2 * S;
@@ -387,7 +387,8 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 
 
 	std::sort(oc, yc, defaultCMP);
-	bufferDistribution<T>(oc, yc, r, cmp);
+	// bufferDistribution<T>(oc, yc, r, cmp);
+	std::inplace_merge(oc, yc, r, defaultCMP);
 }
 
 #endif
