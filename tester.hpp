@@ -4,6 +4,7 @@
 #include <ctime>
 #include <algorithm>
 #include <ostream>
+#include <iomanip>
 
 struct Member{
 	int value;
@@ -239,6 +240,12 @@ void complexTest2 (Merger mrg, size_t size1, size_t size2, size_t tests, size_t 
 	double maxTimeOrig;
 	double minCompOrig;
 	double maxCompOrig;
+	double ext1Time;
+	double ext2Time;
+	double ext3Time;
+	size_t ext1Comp;
+	size_t ext2Comp;
+	size_t ext3Comp;
 	clock_t t0;
 	clock_t t1;
 	Counter cnt;
@@ -267,11 +274,15 @@ void complexTest2 (Merger mrg, size_t size1, size_t size2, size_t tests, size_t 
 	t1 = std::clock();
 	if (check(currSeq, 1).res == 0){
 		std::cerr << "EXTRA_CASE_1 UNORDERED" << std::endl;
+		ext1Time = 0;
+		ext1Comp = 0;
 		goto extra2;
 	}
 	currTime = double(t1 - t0) / CLOCKS_PER_SEC;
 	currComp = cnt.getComps();
 	currOrig = origTest(currSeq, currSeqOrig);
+	ext1Time = currTime;
+	ext1Comp = currComp;
 	Times.push_back(currTime);
 	Comps.push_back(currComp);
 	minTime = currTime;
@@ -313,11 +324,15 @@ void complexTest2 (Merger mrg, size_t size1, size_t size2, size_t tests, size_t 
 	t1 = std::clock();
 	if (check(currSeq, 1).res == 0){
 		std::cerr << "EXTRA_CASE_2 UNORDERED" << std::endl;
+		ext2Time = 0;
+		ext2Comp = 0;
 		goto extra3;
 	}
 	currTime = double(t1 - t0) / CLOCKS_PER_SEC;
 	currComp = cnt.getComps();
 	currOrig = origTest(currSeq, currSeqOrig);
+	ext2Time = currTime;
+	ext2Comp = currComp;
 	Times.push_back(currTime);
 	Comps.push_back(currComp);
 	if (currTime < minTime){
@@ -353,11 +368,15 @@ void complexTest2 (Merger mrg, size_t size1, size_t size2, size_t tests, size_t 
 	t1 = std::clock();
 	if (check(currSeq, 1).res == 0){
 		std::cerr << "EXTRA_CASE_3 UNORDERED" << std::endl;
+		ext3Time = 0;
+		ext3Comp = 0;
 		goto def;
 	}
 	currTime = double(t1 - t0) / CLOCKS_PER_SEC;
 	currComp = cnt.getComps();
 	currOrig = origTest(currSeq, currSeqOrig);
+	ext3Time = currTime;
+	ext3Comp = currComp;
 	Times.push_back(currTime);
 	Comps.push_back(currComp);
 	if (currTime < minTime){
@@ -425,8 +444,8 @@ void complexTest2 (Merger mrg, size_t size1, size_t size2, size_t tests, size_t 
 			maxCompOrig = currOrig;
 			maxCompSeq = currSeq;
 		}
-		std::cerr << ((double)i / tests) * 100 << "% of default cases done" << std::endl;
-		// std::cerr.flush();
+		std::cerr << std::setprecision(0) << std::fixed << ((double)i / tests) * 100 << "% of default cases done\r";
+		std::cerr.flush();
 	}
 	std::cerr.clear();
 	std::cerr << "100% of default cases done" << std::endl;
@@ -442,6 +461,13 @@ void complexTest2 (Merger mrg, size_t size1, size_t size2, size_t tests, size_t 
 	std::cout << std::endl;
 	std::cout << Times.size() << " of " << tests + 3 << " OK" << std::endl;
 	std::cout << std::endl;
+
+	std::cout << "Extra-case 1 time: " << ext1Time << std::endl;
+	std::cout << "Extra-case 1 compares: " << ext1Comp << std::endl;
+	std::cout << "Extra-case 2 time: " << ext2Time << std::endl;
+	std::cout << "Extra-case 2 compares: " << ext2Comp << std::endl;
+	std::cout << "Extra-case 3 time: " << ext3Time << std::endl;
+	std::cout << "Extra-case 3 compares: " << ext3Comp << std::endl;
 
 	std::cout << "Min time: " << minTime << " sec on sequence:" << std::endl;
 	for (Member &i : minTimeSeq){
