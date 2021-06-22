@@ -163,8 +163,8 @@ template<class T, class tIter, class Cmp>
 void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 	size_t M = std::distance(l, m);
 	size_t N = std::distance(m, r);
-	size_t S = std::ceil(1 * std::pow((M * M / std::log2(M)), 1.0 / 3));
-	// size_t S = std::ceil(std::sqrt(M));
+	size_t S = std::ceil(std::pow((M * M / std::log2(M)), 1.0 / 3));
+	// size_t S = std::ceil(std::sqrt(M) + 1);
 	size_t Sx = M % S;
 	size_t Sy = S % S;
 	tIter f = m - 2 * S;
@@ -192,7 +192,7 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 	while (std::distance(oc, yc) > 2 * S){
 		if (mode == 0){
 
-			prefBord = l;
+			// prefBord = l;
 			specialXUpdMode = 0;
 			if (yc != r){
 				xk = std::upper_bound(xc, XcE, *yc, defaultCMP);
@@ -201,6 +201,7 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 				xk = XcE;
 			}
 			if (xk == XcE){
+				prefBord = l;
 				mode = 1;
 				oc = xk;
 				OcB = XcE;
@@ -236,6 +237,9 @@ void gefKatPas (tIter l, tIter m, tIter r, Cmp &cmp){
 				XcB = EcB;
 				XcE = EcE;
 				yc++;
+				if (yc >= prefBord){
+					prefBord = l;
+				}
 				if (yc == YcE){
 					f = YcB;
 					YcB = YcE;
